@@ -1,0 +1,111 @@
+{
+	"global": {
+		"definition": {
+			"desc": "",
+			"name": "Transformation",
+			"project_name": "JsonTransform"
+		},
+		"properties": {
+			"tracking-id": ""
+		}
+	},
+	"steps": [
+		{
+			"definition": {
+				"name": "Input_Validation",
+				"processor-type": "com.msf.core.processor.api.MSFInputValidationProcessor"
+			},
+			"properties": {
+				"validation": [
+					{
+						"parameters": {
+							"REQUEST_PARAMS": [
+								"lname",
+								"fname",
+								"mobile"
+							]
+						},
+						"scenario_name": "default"
+					}
+				]
+			}
+		},
+		{
+			"generic": {
+				"output": "SOAP_REQUEST",
+				"scenarios": [
+					"default"
+				]
+			},
+			"definition": {
+				"name": "Create_SOAP_Body",
+				"processor-type": "com.msf.core.processor.api.MSFJSONTransformation"
+			},
+			"properties": {
+				"mapping": {
+					"default-mapping": {
+						"REQUEST_PARAMS": {
+							"fname": "FirstName",
+							"lname": "LastName",
+							"mobile": "Mobile"
+						}
+					}
+				},
+				"output-type": "xml",
+				"source-data": [
+					"REQUEST_PARAMS"
+				]
+			}
+		},
+		{
+			"generic": {
+				"output": "SOAP_RESPONSE",
+				"scenarios": [],
+				"pre-conditions": []
+			},
+			"definition": {
+				"name": "Call_SOAP_Service",
+				"processor-type": "com.msf.core.processor.soap.MSFSOAPProcessor"
+			},
+			"properties": {
+				"request": {
+					"data": {
+						"body": "SOAP_REQUEST"
+					},
+					"template": "soap_request.xml"
+				},
+				"environments": {
+					"endpoints": {
+						"qa": "",
+						"dev": "https://api.fastforex.io/fetch-one?from=USD&to=INR&api_key=211a19b8e7-67f532445b-r9p3ph",
+						"int": "https://api.fastforex.io/fetch-one?from=USD&to=INR&api_key=211a19b8e7-67f532445b-r9p3ph",
+						"prod": ""
+					},
+					"environment-overrrides": {
+						"int": "dev"
+					}
+				}
+			}
+		},
+		{
+			"generic": {
+				"scenarios": [],
+				"pre-conditions": []
+			},
+			"definition": {
+				"name": "GenerateResponse",
+				"processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+			},
+			"properties": {
+				"response": [
+					{
+						"type": "constant",
+						"dtype": "string",
+						"field": "status",
+						"value": "success"
+					}
+				]
+			}
+		}
+	]
+}
