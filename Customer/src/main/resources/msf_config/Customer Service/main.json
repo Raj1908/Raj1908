@@ -1,0 +1,76 @@
+{
+  "global": {
+    "definition": {
+      "desc": "Service for Customer",
+      "name": "Customer Service",
+      "project_name": "Customer"
+    },
+    "properties": {
+      "tracking-id": "req_id"
+    }
+  },
+  "steps": [
+    {
+      "generic": {
+        "output": "CustomerDetails",
+        "scenarios": [
+          "default"
+        ],
+        "pre-conditions": []
+      },
+      "definition": {
+        "name": "getCustomerDetails",
+        "processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+      },
+      "properties": {
+        "query": "select addressid from customer_details where customerid=2",
+        "params": [],
+        "datasource": "jdbcMSF",
+        "query_return_value": "single_row"
+      }
+    },
+        {
+      "generic": {
+        "output": "AddressDetails",
+        "scenarios": [
+          "default"
+        ],
+        "pre-conditions": []
+      },
+      "definition": {
+        "name": "getAddressDetails",
+        "processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+      },
+      "properties": {
+        "query": "select addressName from address_details where addressid=:addressid",
+        "params": [{"type": "table", "tableName": "CustomerDetails", "columnName": "addressid"}],
+        "datasource": "jdbcMSF",
+        "query_return_value": "single_row"
+      }
+    },
+    {
+      "definition": {
+        "name": "Generate_Response",
+        "processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+      },
+      "properties": {
+        "response": [
+          {
+            "type": "generic",
+            "dtype": "string",
+            "field": "addressid",
+            "tableName": "CustomerDetails",
+            "columnName": "addressid"
+          },
+          {
+            "type": "generic",
+            "dtype": "string",
+            "field": "addressName",
+            "tableName": "AddressDetails",
+            "columnName": "addressName"
+          }
+        ]
+      }
+    }
+  ]
+}
