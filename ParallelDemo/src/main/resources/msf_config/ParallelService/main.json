@@ -1,0 +1,171 @@
+{
+  "global": {
+    "definition": {
+      "desc": "",
+      "name": "ParallelService",
+      "project_name": "ParallelDemo"
+    },
+    "properties": {
+      "tracking-id": ""
+    }
+  },
+  "steps": [
+    {
+      "definition": {
+        "name": "validateInput",
+        "processor-type": "com.msf.core.processor.api.MSFInputValidationProcessor"
+      },
+      "properties": {
+        "validation": [
+          {
+            "parameters": {
+              "REQUEST_PARAMS": [
+                "studentid",
+                "userid"
+              ]
+            },
+            "scenario_name": "default"
+          }
+        ]
+      }
+    },
+    {
+      "generic": {
+        "output": "getStudentName",
+        "scenarios": [],
+        "pre-conditions": []
+      },
+      "definition": {
+        "name": "getStudentName",
+        "processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+      },
+      "properties": {
+        "query": "select student_name from Students where studentid=:studentid",
+        "params": [
+          {
+            "type": "table",
+            "tableName": "REQUEST_PARAMS",
+            "columnName": "studentid"
+          }
+        ],
+        "datasource": "jdbcParallel",
+        "query_return_value": "single_row"
+      }
+    },
+    {
+      "generic": {
+        "output": "getUserName",
+        "scenarios": [],
+        "pre-conditions": []
+      },
+      "definition": {
+        "name": "getUserName",
+        "processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+      },
+      "properties": {
+        "query": "select user_name from Users where userid=:userid",
+        "params": [
+          {
+            "type": "table",
+            "tableName": "REQUEST_PARAMS",
+            "columnName": "userid"
+          }
+        ],
+        "datasource": "jdbcParallel",
+        "query_return_value": "single_row"
+      }
+    },
+    {
+      "steps": [
+        {
+          "generic": {
+            "output": "getStudentName",
+            "scenarios": [],
+            "pre-conditions": []
+          },
+          "definition": {
+            "name": "getStudentName",
+            "processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+          },
+          "properties": {
+            "query": "select student_name from Students where studentid=:studentid",
+            "params": [
+              {
+                "type": "table",
+                "tableName": "REQUEST_PARAMS",
+                "columnName": "studentid"
+              }
+            ],
+            "datasource": "jdbcParallel",
+            "query_return_value": "single_row"
+          }
+        },
+        {
+          "generic": {
+            "output": "getUserName",
+            "scenarios": [],
+            "pre-conditions": []
+          },
+          "definition": {
+            "name": "getUserName",
+            "processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+          },
+          "properties": {
+            "query": "select user_name from Users where userid=:userid",
+            "params": [
+              {
+                "type": "table",
+                "tableName": "REQUEST_PARAMS",
+                "columnName": "userid"
+              }
+            ],
+            "datasource": "jdbcParallel",
+            "query_return_value": "single_row"
+          }
+        }
+      ],
+      "generic": {
+        "scenarios": [],
+        "pre-conditions": []
+      },
+      "definition": {
+        "name": "ParallelCalls",
+        "processor-type": "com.msf.core.asynch.processor.MSFParallelProcessor"
+      }
+    },
+    {
+      "generic": {
+        "scenarios": [],
+        "pre-conditions": []
+      },
+      "definition": {
+        "name": "Generate_JSON_Response",
+        "processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+      },
+      "properties": {
+        "response": [
+          {
+            "type": "generic",
+            "dtype": "string",
+            "field": "student_name1",
+            "tableName": "getStudentName",
+            "columnName": "student_name"
+          },
+          {
+            "type": "generic",
+            "dtype": "string",
+            "field": "user_name",
+            "tableName": "getUserName",
+            "columnName": "user_name"
+          },
+           {
+            "type": "constant",
+            "dtype": "string",
+            "field": "CustomField",
+            "value": "Hello"
+          }
+        ]
+      }
+    }
+  ]
+}
