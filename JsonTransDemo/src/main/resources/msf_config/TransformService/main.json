@@ -1,0 +1,47 @@
+{
+    "global": {
+        "definition": {
+            "desc": "",
+            "name": "TransformService",
+            "project_name": "JsonTransDemo"
+        },
+        "properties": {
+            "tracking-id": "req_id"
+        }
+    },
+    "steps": [
+        {
+            "generic": {
+                "output": "REQUEST_JSON"
+            },
+            "definition": {
+                "name": "ValidateJson",
+                "processor-type": "com.msf.core.processor.api.MSFJSONValidation"
+            },
+            "properties": {
+                "input_json": "REQUEST_PAYLOAD",
+                "schema_name": "input.json"
+            }
+        },
+        {
+            "generic": {
+                "scenarios": [],
+                "pre-conditions": []
+            },
+            "definition": {
+                "name": "GenerateResponse",
+                "processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+            },
+            "properties": {
+                "response": [
+                    {
+                        "type": "constant",
+                        "dtype": "string",
+                        "field": "status",
+                        "value": "success"
+                    }
+                ]
+            }
+        }
+    ]
+}
