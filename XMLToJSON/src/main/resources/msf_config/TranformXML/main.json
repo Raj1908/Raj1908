@@ -1,0 +1,47 @@
+{
+	"global": {
+		"definition": {
+			"desc": "",
+			"name": "TranformXML",
+			"project_name": "XMLToJSON"
+		},
+		"properties": {
+			"tracking-id": ""
+		}
+	},
+	"steps": [
+		{
+			"generic": {
+				"output": "REQUEST_JSON"
+			},
+			"definition": {
+				"name": "Get_XML",
+				"processor-type": "com.msf.core.processor.api.MSFXMLtoJSONProcessor"
+			},
+			"properties": {
+				"input_xml": "REQUEST_PAYLOAD",
+				"schema_name": "input.json"
+			}
+		},
+		{
+			"generic": {
+				"scenarios": [],
+				"pre-conditions": []
+			},
+			"definition": {
+				"name": "Response",
+				"processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+			},
+			"properties": {
+				"response": [
+					{
+						"type": "constant",
+						"dtype": "string",
+						"field": "statusDesc",
+						"value": "Success"
+					}
+				]
+			}
+		}
+	]
+}
