@@ -1,0 +1,100 @@
+{
+	"global": {
+		"definition": {
+			"name": "Customer",
+			"desc": "Customer"
+		},
+		"properties": {
+			"tracking-id": "req_id"
+		}
+	},
+	"steps": [
+	{
+      "generic": {
+        "output": "REQUEST_JSON"
+      },
+      "definition": {
+        "name": "Validate_JSON_Input",
+        "processor-type": "com.msf.core.processor.api.MSFJSONValidation"
+      },
+      "properties": {
+        "input_json": "REQUEST_PAYLOAD",
+        "schema_name": "input.json"
+      }
+    },
+		{
+			"definition": {
+				"name": "getData",
+				"processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+			},
+			"generic": {
+				"output": "SERVICE_DETAILS"
+			},
+			"properties": {
+				"datasource": "jdbcMSFMonitoring",
+				"query": "select service_name,spi_uri,id,spi_endpoint_type,project_name,updt,updated_by from service_master where id=:id",
+				"params": [{"type":"table","tableName":"REQUEST_PARAMS","columnName":"id"}],
+				"query_return_value": "single_row"
+			}
+		},
+		{
+			"definition": {
+				"name": "Generate_JSON_Response",
+				"processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+			},
+			"properties": {
+				"response": [
+					  {
+						"field": "service_name",
+						"type": "generic",
+						"dtype": "string",
+						"tableName": "SERVICE_DETAILS",
+						"columnName": "service_name"
+					},
+					{
+						"field": "project_name",
+						"type": "generic",
+						"dtype": "string",
+						"tableName": "SERVICE_DETAILS",
+						"columnName": "project_name"
+					},
+					{
+						"field": "id",
+						"type": "generic",
+						"dtype": "long",
+						"tableName": "SERVICE_DETAILS",
+						"columnName": "id"
+					},
+					{
+						"field": "spi_uri",
+						"type": "generic",
+						"dtype": "string",
+						"tableName": "SERVICE_DETAILS",
+						"columnName": "spi_uri"
+					},
+					{
+						"field": "updt",
+						"type": "generic",
+						"dtype": "string",
+						"tableName": "SERVICE_DETAILS",
+						"columnName": "updt"
+					},
+					{
+						"field": "updated_by",
+						"type": "generic",
+						"dtype": "string",
+						"tableName": "SERVICE_DETAILS",
+						"columnName": "updated_by"
+					},
+					{
+						"field": "spi_endpoint_type",
+						"type": "generic",
+						"dtype": "string",
+						"tableName": "SERVICE_DETAILS",
+						"columnName": "spi_endpoint_type"
+					}
+				]
+			}
+		}
+	]
+}

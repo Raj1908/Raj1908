@@ -1,0 +1,8 @@
+rootProject.name = 'Demo1'
+
+
+include ':msf_jdbc'
+project(':msf_jdbc').projectDir = new File('../msf_jdbc/')
+
+include ':msf_core'
+project(':msf_core').projectDir = new File('../msf_core/')
