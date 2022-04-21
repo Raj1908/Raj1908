@@ -1,0 +1,84 @@
+{
+	"$id": "http://example.com/example.json",
+	"type": "object",
+	"definitions": {
+		
+	},
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"properties": {
+		"AcctId": {
+			"$id": "/properties/AcctId",
+			"type": "string",
+			"title": "The Acctid Schema ",
+			"default": "",
+			"examples": [
+				"456678999"
+			]
+		},
+		"AcctTyCd": {
+			"$id": "/properties/AcctTyCd",
+			"type": "string",
+			"title": "The Accttycd Schema ",
+			"default": "",
+			"examples": [
+				"A"
+			]
+		},
+		"TradeDate": {
+			"$id": "/properties/TradeDate",
+			"type": "string",
+			"title": "The Tradedate Schema ",
+			"default": "",
+			"examples": [
+				"2018-07-09"
+			]
+		},
+		"SourceDetails": {
+			"$id": "/properties/SourceDetails",
+			"type": "array",
+			"items": {
+				"$id": "/properties/SourceDetails/items",
+				"type": "object",
+				"properties": {
+					"srcId": {
+						"$id": "/properties/SourceDetails/items/properties/srcId",
+						"type": "string",
+						"title": "The Srcid Schema ",
+						"default": "",
+						"examples": [
+							"A"
+						]
+					},
+					"OldPercent": {
+						"$id": "/properties/SourceDetails/items/properties/OldPercent",
+						"type": "string",
+						"title": "The Oldpercent Schema ",
+						"default": "",
+						"examples": [
+							"2.5"
+						]
+					},
+					"NewPercent": {
+						"$id": "/properties/SourceDetails/items/properties/NewPercent",
+						"type": "string",
+						"title": "The Newpercent Schema ",
+						"default": "",
+						"examples": [
+							"4.5"
+						]
+					}
+				},
+				"required": [
+					"srcId",
+					"OldPercent",
+					"NewPercent"
+				]
+			}
+		}
+	},
+	"required": [
+		"AcctId",
+		"TradeDate",
+		"SourceDetails"
+	]
+}

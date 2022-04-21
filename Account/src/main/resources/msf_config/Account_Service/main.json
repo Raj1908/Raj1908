@@ -1,0 +1,282 @@
+{
+	"global": {
+		"definition": {
+			"name": "Account_Service",
+			"desc": "Account Service"
+		},
+		"properties": {
+			"tracking-id": "req_id"
+		}
+	},
+	"steps": [
+	
+		{
+			"definition": {
+				"name": "Query_Order_Header",
+				"processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+			},
+			"generic": {
+				"output": "Order_Header"
+			},
+			"properties": {
+				"datasource": "jdbcMSF",
+				"query": "select * from order_header where customerid=:customerid and orderid=:orderid",
+				"params": [{"type": "table", "tableName": "REQUEST_PARAMS", "columnName": "customerid"},{"type": "table", "tableName": "REQUEST_PARAMS", "columnName": "orderid"}],
+				"query_return_value": "single_row"
+			}
+		},
+		{
+			"definition": {
+				"name": "Query_Order_Detail",
+				"processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+			},
+			"generic": {
+				"output": "Order_Detail"
+			},
+			"properties": {
+				"datasource": "jdbcMSF",
+				"query": "select * from order_detail where orderid=:orderid",
+				"params": [{"type": "table", "tableName": "REQUEST_PARAMS", "columnName": "orderid"}],
+				"query_return_value": "multiple_row"
+			}
+		},
+		{
+			"definition": {
+				"name": "Query_Customer_Detail",
+				"processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+			},
+			"generic": {
+				"output": "Customer_Detail"
+			},
+			"properties": {
+				"datasource": "jdbcMSF",
+				"query": "select * from customer_detail where customerid=:customerid",
+				"params": [{"type": "table", "tableName": "REQUEST_PARAMS", "columnName": "customerid"}],
+				"query_return_value": "single_row"
+			}
+		},
+		{
+			"definition": {
+				"name": "Query_Customer_Address",
+				"processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+			},
+			"generic": {
+				"output": "Customer_Address"
+			},
+			"properties": {
+				"datasource": "jdbcMSF",
+				"query": "select * from customer_address where addressid=:addressid",
+				"params": [{"type": "table", "tableName": "Customer_Detail", "columnName": "addressid"}],
+				"query_return_value": "single_row"
+			}
+		},
+		{
+             "definition": {
+                    "name": "Pincode_Validation",
+                    "processor-type": "com.msf.core.processor.rest.MSFRESTProcessor"
+             },
+             "generic": {
+                    "output": "Pincode_Validation",
+                    "scenarios": [],
+                    "pre-conditions": []
+             },
+             "properties": {
+                    "method": "GET",
+                    "environments": {
+                    "endpoints": {
+                         "dev": "http://www.postalpincode.in/api/pincode/444605"
+                    },
+                    "environment-overrrides": {
+                            "int": "dev"
+                    }
+            }
+          }
+        },
+		{
+			"definition": {
+				"name": "Generate_JSON_Response",
+				"processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+			},
+			"properties": {
+				"response": [
+				       {
+						   "field": "orderid",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Order_Header",
+						   "columnName": "orderid"
+					   },
+					   {
+						   "field": "orderdate",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Order_Header",
+						   "columnName": "orderdate"
+					   },
+					   {
+						   "field": "deliverdate",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Order_Header",
+						   "columnName": "deliverdate"
+					   },
+					   {
+						   "field": "orderstatus",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Order_Header",
+						   "columnName": "orderstatus"
+					   },
+					   {
+						   "field": "carrierid",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Order_Header",
+						   "columnName": "carrierid"
+					   },
+					   {
+						    "field": "orders",
+						    "type": "array",
+						    "map": "Order_Detail",
+						    "injectTableName": "Order_Detail_Array",
+						    "children": [
+							      {
+								     "field": "productid",
+								     "type": "generic",
+								     "dtype": "string",
+								     "tableName": "Order_Detail_Array",
+								     "columnName": "productid"
+							      },
+							      {
+								     "field": "product_qty",
+								     "type": "generic",
+								     "dtype": "string",
+								     "tableName": "Order_Detail_Array",
+								     "columnName": "product_qty"
+							      },
+							      {
+								     "field": "product_price",
+								     "type": "generic",
+								     "dtype": "string",
+								     "tableName": "Order_Detail_Array",
+								     "columnName": "product_price"
+							      },
+							      {
+								     "field": "warehouse",
+								     "type": "generic",
+								     "dtype": "string",
+								     "tableName": "Order_Detail_Array",
+								     "columnName": "warehouse"
+							      }
+							   ]
+					   },
+					   {
+						   "field": "customer_fname",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Detail",
+						   "columnName": "customer_fname"
+					   },
+					    {
+						   "field": "customer_lname",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Detail",
+						   "columnName": "customer_lname"
+					   },
+					    {
+						   "field": "mobileno",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Detail",
+						   "columnName": "mobileno"
+					   },
+					    {
+						   "field": "email",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Detail",
+						   "columnName": "email"
+					   },
+					    {
+						   "field": "addressid",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Detail",
+						   "columnName": "addressid"
+					   },
+					   {
+						   "field": "address_line1",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Address",
+						   "columnName": "address_line1"
+					   },
+					   {
+						   "field": "address_line2",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Address",
+						   "columnName": "address_line2"
+					   },
+					   {
+						   "field": "city",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Address",
+						   "columnName": "city"
+					   },
+					   {
+						   "field": "state",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Address",
+						   "columnName": "state"
+					   },
+					   {
+						   "field": "country",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Address",
+						   "columnName": "country"
+					   },
+					   {
+						   "field": "pin",
+						   "type": "generic",
+						   "dtype": "string",
+						   "tableName": "Customer_Address",
+						   "columnName": "pin"
+					   },
+					   {
+                         "type": "object",
+                         "field": "address1",
+                         "children": [
+                            {
+                              "path": "Message",
+                              "type": "map",
+                              "dtype": "string",
+                              "field": "Message",
+                              "parent_map": "Pincode_Validation"
+                            },
+                            {
+                              "path": "Status",
+                              "type": "map",
+                              "dtype": "string",
+                              "field": "Status",
+                              "parent_map": "Pincode_Validation"
+                            },
+                            {
+                              "path": "PincodeOffice",
+                              "type": "array_map",
+                              "field": "PincodeOffice",
+                              "children": []
+                            }
+                         ]
+                       }
+					]
+				 }
+				 } 
+				]
+			}
+		
+	
