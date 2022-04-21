@@ -1,0 +1,64 @@
+{
+	"global": {
+		"definition": {
+			"desc": "",
+			"name": "MonitorWork",
+			"project_name": "Monitoring"
+		},
+		"monitoring": {
+			"enable": "YES",
+			"datasource": "jdbcREAD",
+			"connector-type": "com.msf.adaptor.monitoring.MSFJDBCMonitorAdaptor",
+			"datasource-name": "jdbcMSF"
+		},
+		"properties": {
+			"tracking-id": "transaction_id"
+		}
+	},
+	"steps": [
+		{
+			"generic": {
+				"output": "Data_Reciever",
+				"scenarios": [],
+				"pre-conditions": []
+			},
+			"definition": {
+				"name": "readData",
+				"processor-type": "com.msf.core.processor.jdbc.MSFJDBCReadProcessor"
+			},
+			"properties": {
+				"query": "select studentName from student where studentId=:studentId",
+				"params": [
+					{
+						"type": "table",
+						"tableName": "REQUEST_PARAMS",
+						"columnName": "studentId"
+					}
+				],
+				"datasource": "jdbcMonitor",
+				"query_return_value": "single_row"
+			}
+		},
+		{
+			"generic": {
+				"scenarios": [],
+				"pre-conditions": []
+			},
+			"definition": {
+				"name": "Response",
+				"processor-type": "com.msf.core.processor.api.MSFResponseGeneratorProcessor"
+			},
+			"properties": {
+				"response": [
+					{
+						"field": "studentName",
+						"type": "generic",
+						"dtype": "string",
+						"tableName": "Data_Reciever",
+						"columnName": "studentName"
+					}
+				]
+			}
+		}
+	]
+}
